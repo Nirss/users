@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option go_package = "github.com/Nirss/users/grpcserver";
+
+service UsersService {
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {}
+  rpc AddUser(AddUserRequest) returns (AddUserResponse) {}
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
+}
+
+message GetUsersRequest {}
+
+message GetUsersResponse {
+  repeated User result = 1;
+}
+
+message User {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+  string phone = 4;
+}
+
+message AddUserRequest {
+  string name = 1;
+  string email = 2;
+  string phone = 3;
+}
+
+message AddUserResponse {}
+
+message DeleteUserRequest {
+  int32 id = 1;
+}
+
+message DeleteUserResponse {}
