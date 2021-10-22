@@ -22,7 +22,7 @@ func main() {
 }
 
 func ConnectDB() (*gorm.DB, error) {
-	dsn := "host=localhost user=postgres password='' dbname=teeest port=5432"
+	dsn := "host=localhost user=postgres password='' dbname=users port=5432"
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN: dsn,
 	}), &gorm.Config{})
