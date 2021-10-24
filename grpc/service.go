@@ -19,7 +19,7 @@ type Service struct {
 	usersRepository *repository.UsersRepository
 }
 
-func (s *Service) GetAllUsers(ctx context.Context) (*grpcserver.GetUsersResponse, error) {
+func (s *Service) GetUsers(ctx context.Context, request *grpcserver.GetUsersRequest) (*grpcserver.GetUsersResponse, error) {
 	result, err := s.cache.GetUsers(ctx)
 	if err != nil {
 		result, err = s.usersRepository.GetUsers()
@@ -38,7 +38,7 @@ func (s *Service) GetAllUsers(ctx context.Context) (*grpcserver.GetUsersResponse
 	return &grpcserver.GetUsersResponse{Result: users}, nil
 }
 
-func (s *Service) CreateUser(ctx context.Context, request *grpcserver.AddUserRequest) (*grpcserver.AddUserResponse, error) {
+func (s *Service) AddUser(ctx context.Context, request *grpcserver.AddUserRequest) (*grpcserver.AddUserResponse, error) {
 	var params = &repository.Users{
 		Model: gorm.Model{},
 		Name:  request.Name,
@@ -46,12 +46,12 @@ func (s *Service) CreateUser(ctx context.Context, request *grpcserver.AddUserReq
 		Phone: request.Phone,
 	}
 	err := s.usersRepository.CreateUser(params)
-	return nil, err
+	return &grpcserver.AddUserResponse{}, err
 }
 
 func (s *Service) DeleteUser(ctx context.Context, request *grpcserver.DeleteUserRequest) (*grpcserver.DeleteUserResponse, error) {
 	err := s.usersRepository.DeleteUser(int(request.Id))
-	return nil, err
+	return &grpcserver.DeleteUserResponse{}, err
 }
 
 func ListenAndServe(port string, usersRepository *repository.UsersRepository, cache *redis_cache.Cache) {

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/Nirss/users/repository"
 
@@ -44,10 +45,10 @@ func (r *Cache) GetUsers(ctx context.Context) ([]repository.Users, error) {
 func (r *Cache) SetUsers(ctx context.Context, users []repository.Users) error {
 	data, err := json.Marshal(users)
 	if err != nil {
-		log.Println("set redis value error: ", err)
+		log.Println("marshal error: ", err)
 		return ErrUnexpectedError
 	}
-	err = r.client.Set(ctx, "users", data, 0).Err()
+	err = r.client.Set(ctx, "users", data, time.Minute).Err()
 	if err != nil {
 		log.Println("set redis value error: ", err)
 	}
