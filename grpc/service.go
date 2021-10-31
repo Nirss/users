@@ -24,9 +24,10 @@ func (s *Service) GetUsers(ctx context.Context, request *grpcserver.GetUsersRequ
 	if err != nil {
 		result, err = s.usersRepository.GetUsers()
 		if err != nil {
+			log.Println("set redis value error: ", err)
 			return nil, err
 		}
-		err = s.cache.SetUsers(context.Background(), result)
+		err = s.cache.SetUsers(ctx, result)
 		if err != nil {
 			log.Println("set redis value error: ", err)
 		}

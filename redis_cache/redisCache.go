@@ -3,7 +3,6 @@ package redis_cache
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -11,10 +10,6 @@ import (
 	"github.com/Nirss/users/repository"
 
 	"github.com/go-redis/redis/v8"
-)
-
-var (
-	ErrUnexpectedError = errors.New("unexpected error, please repeat again later")
 )
 
 type Cache struct {
@@ -28,16 +23,15 @@ func NewCache(port string) *Cache {
 
 func (r *Cache) GetUsers(ctx context.Context) ([]repository.Users, error) {
 	redisValue, err := r.client.Get(ctx, "users").Result()
-	var result []repository.Users
 	if err != nil {
-		log.Println("get redis value error: ", err)
-		return nil, ErrUnexpectedError
+		return nil, err
 	}
+	var result []repository.Users
 	err = json.Unmarshal([]byte(redisValue), &result)
 	if err != nil {
-		log.Println("get redis value error: ", err)
+		log.Println("value unmarshal error: ", err)
 		r.client.Del(ctx, "users")
-		return nil, ErrUnexpectedError
+		return nil, err
 	}
 	return result, nil
 }
@@ -46,11 +40,6 @@ func (r *Cache) SetUsers(ctx context.Context, users []repository.Users) error {
 	data, err := json.Marshal(users)
 	if err != nil {
 		log.Println("marshal error: ", err)
-		return ErrUnexpectedError
 	}
-	err = r.client.Set(ctx, "users", data, time.Minute).Err()
-	if err != nil {
-		log.Println("set redis value error: ", err)
-	}
-	return nil
+	return r.client.Set(ctx, "users", data, time.Minute).Err()
 }
